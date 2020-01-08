@@ -29,7 +29,7 @@ object TestCRDT {
 	implicit val crdtState = CRDTStateInstances.uCRDTState
 	
 	val ianyId = AnyIdInstances.intAnyId
-  val node_id0: UNODE_ID = 0
+        val node_id0: UNODE_ID = 0
 	val node_id1: UNODE_ID = 1
 	val node_id2: UNODE_ID = 2
 	val node_list3: List[UNODE_ID] = List(node_id0, node_id1, node_id2)
@@ -78,70 +78,70 @@ object TestCRDT {
 		                   csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = 
 	  ulist.foldLeft(csdx)((csdx0, um0) => UpdateFromUser.update(um0, csdx0, ianyId))										 
 
-  def mupdate_from_user() = (update_from_user(ulist0, csd0003), 
+        def mupdate_from_user() = (update_from_user(ulist0, csd0003), 
 	                           update_from_user(ulist1, csd1013), 
-														 update_from_user(ulist2, csd2023))
+				   update_from_user(ulist2, csd2023))
 
 	def update_from_peer_smd(smdx: SND_MSG_DATA[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
-											     csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = 
+				 csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = 
 	  smdx.get(crdtState.get_node_id(csdx)).fold(csdx)(umcx => update_from_peer(umcx, csdx))
 														  
-  def update_from_peer(umcx: UNDELIV_MSG_CLASS[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+        def update_from_peer(umcx: UNDELIV_MSG_CLASS[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 	                     csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) =
 	  UpdateFromPeer.update(umcx, csdx, ianyId, ianyId)
 		
 	def mupdate_from_peer3(csdx0: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 	                       csdx1: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
-											   csdx2: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = {
+			       csdx2: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = {
 	  val smd0 = snd_msg_data(csdx0)
-		val smd1 = snd_msg_data(csdx1)
-		val smd2 = snd_msg_data(csdx2)
+	  val smd1 = snd_msg_data(csdx1)
+	  val smd2 = snd_msg_data(csdx2)
 		
-		val csdx01 = update_from_peer_smd(smd1, csdx0)	
-		val csdx02 = update_from_peer_smd(smd2, csdx01)										  	
+	  val csdx01 = update_from_peer_smd(smd1, csdx0)	
+	  val csdx02 = update_from_peer_smd(smd2, csdx01)										  	
 
-		val csdx11 = update_from_peer_smd(smd0, csdx1)	
-		val csdx12 = update_from_peer_smd(smd2, csdx11)										  	
+	  val csdx11 = update_from_peer_smd(smd0, csdx1)	
+	  val csdx12 = update_from_peer_smd(smd2, csdx11)										  	
 
-		val csdx21 = update_from_peer_smd(smd0, csdx2)	
-		val csdx22 = update_from_peer_smd(smd1, csdx21)										  	
+	  val csdx21 = update_from_peer_smd(smd0, csdx2)	
+	  val csdx22 = update_from_peer_smd(smd1, csdx21)										  	
 		 									  	
-		(csdx02, csdx12, csdx22)											
+	  (csdx02, csdx12, csdx22)											
 	}
 		
 	def mupdate_from_peer2(csdx0: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 	                       csdx1: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = {
 	  val smd0 = snd_msg_data(csdx0)
-		val smd1 = snd_msg_data(csdx1)
+	  val smd1 = snd_msg_data(csdx1)
 		
-		val csdx01 = update_from_peer_smd(smd1, csdx0)	
+	  val csdx01 = update_from_peer_smd(smd1, csdx0)	
 
-		val csdx11 = update_from_peer_smd(smd0, csdx1)	
+	  val csdx11 = update_from_peer_smd(smd0, csdx1)	
 
-		(csdx01, csdx11)											
+	  (csdx01, csdx11)											
 	}
 	
 	def add_replica() = {
 	  val csdx00 = update_from_user(ulist0, csd0002)	
-		val csdx10 = update_from_user(ulist1, csd1012)
-		val csdx20 = csd2123
+	  val csdx10 = update_from_user(ulist1, csd1012)
+	  val csdx20 = csd2123
 		
-		val csdx01 = crdtState.upgrade_replica(cda123, csdx00)
-		val csdx11 = csdx10
-		val csdx21 = crdtState.new_replica(csdx01, csdx20, ianyId)
+	  val csdx01 = crdtState.upgrade_replica(cda123, csdx00)
+	  val csdx11 = csdx10
+	  val csdx21 = crdtState.new_replica(csdx01, csdx20, ianyId)
 		
-		(csdx01, csdx11, csdx21)
+	  (csdx01, csdx11, csdx21)
 	}
 	
 	def rmv_replica() = {
-		val csdx00 = update_from_user(List(uma5), csd0003)
-		val csdx10 = update_from_user(List(uma6), csd1013)
-		val csdx20 = update_from_user(List(uma7), csd2023)
+	  val csdx00 = update_from_user(List(uma5), csd0003)
+	  val csdx10 = update_from_user(List(uma6), csd1013)
+	  val csdx20 = update_from_user(List(uma7), csd2023)
 		
-		val smd20 = snd_msg_data(csdx20)
+	  val smd20 = snd_msg_data(csdx20)
 		
-		val csdx01 = update_from_peer_smd(smd20, csdx00)
-		(csdx01, csdx10)
+	  val csdx01 = update_from_peer_smd(smd20, csdx00)
+	  (csdx01, csdx10)
 	}
 	
 	def upgrade_replica(cdx: CLUSTER_DETAIL[UNODE_ID, UCLUSTER_ID],
@@ -150,7 +150,7 @@ object TestCRDT {
 	
 	def query_from_user(crdt_instance: CRDT_INSTANCE[PureOpsCRDT, UCRDT_ID],
 	                    crdt_ops: CRDTOps,
-										  csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) =
+			    csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) =
 	  QueryFromUser.eval(crdt_instance, crdt_ops, csdx)
 		
 	def snd_msg_data(csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) =
