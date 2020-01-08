@@ -21,6 +21,10 @@ AWSet - non-commutative CRDT
 
 RWSet - non-commutative CRDT
 
+EWFlag - non-commutative CRDT
+
+DWFlag - non-commutative CRDT
+
 This library implements "at least once delivery" semantics with reliable causal broadcast. It can handle duplicate messages, lost messages and out-of-order messages. This feature converts "at least once delivery" semantics to "exactly once delivery" semantics that is required for operation-based CRDTs.
 
 It also has feature to dynamiclly add a new replica or remove an existing replica. A replica cluster has a cluster_id. A new replica will be added if has the same cluster_id.
