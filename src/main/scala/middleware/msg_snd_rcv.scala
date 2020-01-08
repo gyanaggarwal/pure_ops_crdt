@@ -115,10 +115,11 @@ trait MSGSndRcv[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 														   msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 														   msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	MSG_LIST[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = {
-		msg_log.filterKeys(!anyId.eqv(_, tnode_id)).foldLeft(msgOpr.empty_msg_list){case (ml0, (snode_id, msg_class)) => {
-			val msg_list0 = msgClass.undeliv_msg(vectorClock.logical_clock(snode_id, tvclock), msg_class)
-			val msg_list1 = if (anyId.eqv(node_id, snode_id)) add_msg_vclock(msg_vclock, msg_list0) else msg_list0
-			ml0 ++ msg_list1
+    tvclock.filterKeys(!anyId.eqv(_, tnode_id))
+		  .foldLeft(msgOpr.empty_msg_list){case (ml0, (snode_id, slogical_clock)) => {
+		  	val msg_list0 = msg_log.get(snode_id)
+				                  .fold(msgOpr.empty_msg_list)(msg_class => msgClass.undeliv_msg(slogical_clock, msg_class))
+				ml0 ++ (if (anyId.eqv(node_id, snode_id)) add_msg_vclock(msg_vclock, msg_list0) else msg_list0)
 		}}
 	}
 															 

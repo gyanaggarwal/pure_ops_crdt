@@ -102,8 +102,8 @@ trait CRDTState[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 														   polog: POLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = crdt_state match {
 		case _: TYPE_CRDT_STATE_DATA => 
-		get_po_log(crdt_state).fold(crdt_state)(po_log => {
-			set_po_log(polog.upgrade_replica(cluster_detail, po_log), crdt_state)
+		  get_po_log(crdt_state).fold(crdt_state)(po_log => {
+			  set_po_log(polog.upgrade_replica(cluster_detail, po_log), set_cluster_detail(cluster_detail, crdt_state))
 		})
 		case _: TYPE_CRDT_STATE_NEW => crdt_state
 	}
