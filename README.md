@@ -1,5 +1,6 @@
 # pure_ops_crdt
 Pure Operation-Based Replicated Data Types
+
 This is an implementation based on a paper "Pure Operation-Based Replicated Data Types" by Carlos Baquero, Paulo Sergio Almeida and Ali Shoker. This paper has been uploaded in docs folder here.
 
 This is a complete implementation of Middleware along with the following CRDTs.
