@@ -17,7 +17,7 @@ trait PureOpsNonCommCRDT extends PureOpsCRDT {
 	def combine_any(value0: Any,
 	                value1: Any):Any
 
-	def process_msg_log(msg_log: MSG_LOG[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
+	def process_msg_log(msg_log: MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
 							       (implicit msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 								               msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]):
 	Any =  

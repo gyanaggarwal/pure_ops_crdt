@@ -48,71 +48,69 @@ object Model {
 	                 (crdt_instance: CRDT_INSTANCE[CRDT_TYPE, CRDT_ID],
 									  crdt_ops:      CRDT_OPS)
 										
-	sealed trait MESSAGE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
-	final case class MSG_VCLOCK[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
-	                 (cluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID],
-										node_vclock:    NODE_VCLOCK[NODE_ID],
+	sealed trait MESSAGE[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
+	final case class MSG_VCLOCK[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
+	                 (node_vclock:    NODE_VCLOCK[NODE_ID],
 									  crdt_instance:  CRDT_INSTANCE[CRDT_TYPE, CRDT_ID])
-									 extends MESSAGE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] 																											
-	final case class MSG_OPS[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
-								 	 (cluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID],
-								 		node_vclock:    NODE_VCLOCK[NODE_ID],
+									 extends MESSAGE[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] 																											
+	final case class MSG_OPS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
+								 	 (node_vclock:    NODE_VCLOCK[NODE_ID],
 								 		crdt_instance:  CRDT_INSTANCE[CRDT_TYPE, CRDT_ID],
 									  crdt_ops:       CRDT_OPS)
-								 	 extends MESSAGE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] 																											
+								 	 extends MESSAGE[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] 																											
 
 	type TYPE_CLUSTER_DETAIL_ADD = ClusterDetailADD[_, _]
 	type TYPE_CLUSTER_DETAIL_RMV = ClusterDetailRMV[_, _]
 
-  type TYPE_MSG_VCLOCK         = MSG_VCLOCK[_, _, _, _, _]
-	type TYPE_MSG_OPS            = MSG_OPS[_, _, _, _, _]	
+  type TYPE_MSG_VCLOCK         = MSG_VCLOCK[_, _, _, _]
+	type TYPE_MSG_OPS            = MSG_OPS[_, _, _, _]	
 
 //SortedMap
-  type MSG_DATA[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
-		Map[LOGICAL_CLOCK, MSG_OPS[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
+  type MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
+		Map[LOGICAL_CLOCK, MSG_OPS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
 
-	final case class MSG_CLASS[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
-	                 (msg_data:         MSG_DATA[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
-									  pending_msg_data: MSG_DATA[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
+	final case class MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
+	                 (msg_data:         MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+									  pending_msg_data: MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
 
 //HashMap 
-  type MSG_LOG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
-    Map[NODE_ID, MSG_CLASS[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
+  type MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
+    Map[NODE_ID, MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
 		
-	final case class PO_LOG_CLASS[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
+	final case class PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
 	                 (tcsb_class: TCSB_CLASS[NODE_ID],
-									  msg_log:    MSG_LOG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+									  msg_log:    MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 									  crdt_type:  CRDT_TYPE,
 									  crdt_data:  Any)
 	
 //HashMap										
-	type PO_LOG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
-	  Map[CRDT_INSTANCE[CRDT_TYPE, CRDT_ID], PO_LOG_CLASS[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
+	type PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
+	  Map[CRDT_INSTANCE[CRDT_TYPE, CRDT_ID], PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
 		
 	sealed trait CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
 	final case class CRDT_STATE_NEW[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
-	                 (node_id: NODE_ID,
+	                 (node_id:        NODE_ID,
 									  cluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID])
 									 extends CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
 	final case class CRDT_STATE_DATA[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
-	                 (node_id: NODE_ID,
+	                 (node_id:        NODE_ID,
 									  cluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID],
-									  po_log: PO_LOG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
+									  po_log:         PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
 									 extends CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
 									 
 	type TYPE_CRDT_STATE_NEW  = CRDT_STATE_NEW[_, _, _, _, _]
 	type TYPE_CRDT_STATE_DATA = CRDT_STATE_DATA[_, _, _, _, _]
 	
-  type MSG_LIST[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
-    List[MESSAGE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
+  type MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
+    List[MESSAGE[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
 	 
 //HashMap for list of messages for a CRDT that have not been delivered to a peer node
-  type UNDELIV_MSG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
-		Map[CRDT_INSTANCE[CRDT_TYPE, CRDT_ID], MSG_LIST[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
+  type UNDELIV_MSG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
+		Map[CRDT_INSTANCE[CRDT_TYPE, CRDT_ID], MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
 
   final case class UNDELIV_MSG_CLASS[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
 	                 (cluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID],
-									  undeliv_msg: UNDELIV_MSG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])	
+									  undeliv_msg:    UNDELIV_MSG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])	
 	
 //HashMap for all the peer nodes for undelivered messages
 	type SND_MSG_DATA[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =

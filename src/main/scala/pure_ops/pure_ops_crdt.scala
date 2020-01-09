@@ -30,18 +30,18 @@ trait PureOpsCRDT {
   def combine_msg_log_data(msg_log_data: Any,
 	                         crdt_data: Any): Any
 													 											 
-	def process_msg_log(msg_log: MSG_LOG[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
+	def process_msg_log(msg_log: MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
 										 (implicit msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 										 					 msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]): Any
 	
 	def combine_msg_log(crdt_data: Any,
-		                  msg_log: MSG_LOG[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
+		                  msg_log: MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
 										 (implicit msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 														 	 msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]): 
 	Any = combine_msg_log_data(process_msg_log(msg_log), crdt_data)
 	
 	def update_causal_stable(crdt_data: Any,
-		                       msg_log: MSG_LOG[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
+		                       msg_log: MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
 										      (implicit msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 														 	      msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]): 
 	Any = combine_msg_log(crdt_data, msg_log)
@@ -62,7 +62,7 @@ trait PureOpsCRDT {
 	
 	def eval(crdt_ops: CRDTOps,
 	         crdt_data: Any,
-				   msg_log: MSG_LOG[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
+				   msg_log: MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
 					(implicit msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 										msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]):
 	Any = eval_data(crdt_ops, combine_msg_log(crdt_data, msg_log)) 

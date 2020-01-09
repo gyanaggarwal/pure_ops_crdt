@@ -11,7 +11,7 @@ trait UpdateCRDT[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
   def query(crdt_type: CRDT_TYPE,
 						crdt_ops: CRDT_OPS,
 					  crdt_data: Any,
-					  msg_log: MSG_LOG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
+					  msg_log: MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
 					 (implicit msgOpr: MSGOperation[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 					           msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]): Any
 
@@ -24,7 +24,7 @@ final case object UpdateCRDT extends UpdateCRDT[UNODE_ID, UCLUSTER_ID, PureOpsCR
   def query(crdt_type: PureOpsCRDT,
 						crdt_ops: CRDTOps,
 					  crdt_data: Any,
-					  msg_log: MSG_LOG[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
+					  msg_log: MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
 					 (implicit msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 					           msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]): 
 	Any = crdt_type.eval(crdt_ops, crdt_data, msg_log)

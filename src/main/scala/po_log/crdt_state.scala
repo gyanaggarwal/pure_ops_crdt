@@ -15,7 +15,7 @@ trait CRDTState[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 
 	def make(node_id: NODE_ID,
 		       cluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID],
-				   po_log: PO_LOG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+				   po_log: PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
 		CRDT_STATE_DATA(node_id, cluster_detail, po_log)
 		
@@ -46,7 +46,7 @@ trait CRDTState[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 	}
 	
 	def get_po_log(crdt_state: CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
-	Option[PO_LOG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]] = crdt_state match {
+	Option[PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]] = crdt_state match {
 		case _: TYPE_CRDT_STATE_DATA => Some(asCRDT_STATE_DATA(crdt_state).po_log)
 		case _: TYPE_CRDT_STATE_NEW  => None
 	}
@@ -58,20 +58,20 @@ trait CRDTState[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 		case _: TYPE_CRDT_STATE_NEW  => asCRDT_STATE_NEW(crdt_state).copy(cluster_detail = cluster_detail)
 	}
 	
-	def set_po_log(po_log: PO_LOG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+	def set_po_log(po_log: PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 	               crdt_state: CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = crdt_state match {
 		case _: TYPE_CRDT_STATE_DATA => asCRDT_STATE_DATA(crdt_state).copy(po_log = po_log)
 		case _: TYPE_CRDT_STATE_NEW  => crdt_state
 	}
 
-  def add_po_log(po_log: PO_LOG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+  def add_po_log(po_log: PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 	               crdt_state: CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
 	  make(get_node_id(crdt_state), get_cluster_detail(crdt_state), po_log)
 
 	def get_po_log_class(crdt_instance: CRDT_INSTANCE[CRDT_TYPE, CRDT_ID],
-		                   po_log: PO_LOG[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+		                   po_log: PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 					             crdt_state: CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 					             anyId: AnyId[NODE_ID])
 					            (implicit crdtInstance: CRDTInstance[CRDT_TYPE, CRDT_ID],
@@ -81,7 +81,7 @@ trait CRDTState[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 									              msgLog: MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 									              pologClass: POLogClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 															  polog: POLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
-	PO_LOG_CLASS[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
+	PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
 	  polog.get(get_node_id(crdt_state), 
 		          clusterConfig.get_node_list(get_cluster_detail(crdt_state)),
 						  crdt_instance,
