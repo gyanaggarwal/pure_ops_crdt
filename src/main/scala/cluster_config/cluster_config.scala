@@ -12,15 +12,15 @@ final case object IVCC extends COMPCC
 
 trait ClusterConfig[NODE_ID, CLUSTER_ID] {
   def makeADD(cluster_id: CLUSTER_ID,
-	      ver_num: CLUSTER_VER_NUM,
-	      node_id: NODE_ID,
-	      node_list: List[NODE_ID]):
+	            ver_num: CLUSTER_VER_NUM,
+	            node_id: NODE_ID,
+	            node_list: List[NODE_ID]):
   CLUSTER_DETAIL[NODE_ID, CLUSTER_ID] = ClusterDetailADD(cluster_id, ver_num, node_id, node_list)
 	
   def makeRMV(cluster_id: CLUSTER_ID,
-	      ver_num: CLUSTER_VER_NUM,
-	      node_id: NODE_ID,
-	      node_list: List[NODE_ID]):
+	            ver_num: CLUSTER_VER_NUM,
+	            node_id: NODE_ID,
+	            node_list: List[NODE_ID]):
   CLUSTER_DETAIL[NODE_ID, CLUSTER_ID] = ClusterDetailRMV(cluster_id, ver_num, node_id, node_list)
 
   def asClusterDetailADD(cluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID]):
@@ -70,7 +70,7 @@ trait ClusterConfig[NODE_ID, CLUSTER_ID] {
 	
   def comp_cc(mcluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID],
               scluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID],
-	      anyId: AnyId[CLUSTER_ID]):
+	            anyId: AnyId[CLUSTER_ID]):
   COMPCC = anyId.eqv(get_cluster_id(mcluster_detail), get_cluster_id(scluster_detail)) match {
     case true  => comp_vn(get_ver_num(mcluster_detail), get_ver_num(scluster_detail))
     case false => IVCC
