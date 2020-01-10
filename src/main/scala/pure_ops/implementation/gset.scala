@@ -10,8 +10,8 @@ final case object GSet extends PureOpsCommCRDT {
 		case _      => false
 	}
 	
-	def update_data(crdt_data: Any,
-	                crdt_ops: CRDTOps):
+	def update_comm_crdt(crdt_data: Any,
+	                     crdt_ops: CRDTOps):
 	Any = crdt_ops match {
 		case ADD(args) => crdt_data.asInstanceOf[Set[Any]]+args
 		case _         => crdt_data

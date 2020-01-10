@@ -11,8 +11,8 @@ final case object PNCounter extends PureOpsCommCRDT {
 		case _      => false
 	}
 	
-	def update_data(crdt_data: Any,
-	                crdt_ops: CRDTOps):
+	def update_comm_crdt(crdt_data: Any,
+	                     crdt_ops: CRDTOps):
 	Any = crdt_ops match {
 		case INC(args) => crdt_data.asInstanceOf[Long]+args
 		case DEC(args) => crdt_data.asInstanceOf[Long]-args

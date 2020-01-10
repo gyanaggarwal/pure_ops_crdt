@@ -11,8 +11,8 @@ final case object TPSet extends PureOpsCommCRDT {
 		case _      => false
 	}
 	
-	def update_data(crdt_data: Any,
-	                crdt_ops: CRDTOps):
+	def update_comm_crdt(crdt_data: Any,
+	                     crdt_ops: CRDTOps):
 	Any = {
 		val data = crdt_data.asInstanceOf[ARSet]
 		crdt_ops match {
