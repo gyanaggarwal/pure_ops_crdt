@@ -10,7 +10,7 @@ import message.interpreter._
 import msg_data.interpreter._
 import po_log.interpreter._
 import util.interpreter._
-
+ 
 object TestCRDT {
 	implicit val updateCRDT = UpdateCRDT
 	implicit val msgSndRcv = MSGSndRcv
