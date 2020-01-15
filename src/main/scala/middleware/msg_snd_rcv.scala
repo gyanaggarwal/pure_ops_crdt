@@ -42,7 +42,8 @@ trait MSGSndRcv[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 	UNDELIV_MSG_CLASS[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
 	  snd_msg_data.getOrElse(node_id, make_undeliv_msg_class(cluster_detail, empty_undeliv_msg))
 								
-	def snd_msg_data(crdt_state: CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+	def snd_msg_data(tnode_list: List[NODE_ID],
+		               crdt_state: CRDT_STATE[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 	                 anyId: AnyId[NODE_ID])
 	 								(implicit vectorClock: VectorClock[NODE_ID],
 	 											    nodeVCLOCK: NodeVCLOCK[NODE_ID],
@@ -56,6 +57,7 @@ trait MSGSndRcv[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 		val smd = empty_snd_msg_data
 		crdtState.get_po_log(crdt_state).fold(smd)(po_log => 
 		  make_undeliv_msg(crdtState.get_node_id(crdt_state), 
+			                 tnode_list,
 		                   crdtState.get_cluster_detail(crdt_state), 
 										   po_log, 
 										   smd, 
@@ -63,6 +65,7 @@ trait MSGSndRcv[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 	}
 	
 	def make_undeliv_msg(node_id: NODE_ID,
+		                   tnode_list: List[NODE_ID],
 	                     cluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID],
 										   po_log: PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 										   smd: SND_MSG_DATA[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
@@ -76,10 +79,11 @@ trait MSGSndRcv[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 																 pologClass: POLogClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	SND_MSG_DATA[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
 	  po_log.foldLeft(smd){case (smd0, (crdt_instance, po_log_class)) => 
-	    make_msg_data(node_id, cluster_detail, crdt_instance, po_log_class, smd0, anyId)
+	    make_msg_data(node_id, tnode_list, cluster_detail, crdt_instance, po_log_class, smd0, anyId)
 	}
 	
 	def make_msg_data(node_id: NODE_ID,
+		                tnode_list: List[NODE_ID],
 	                  cluster_detail: CLUSTER_DETAIL[NODE_ID, CLUSTER_ID],
 										crdt_instance: CRDT_INSTANCE[CRDT_TYPE, CRDT_ID],
 										po_log_class: PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
@@ -96,11 +100,18 @@ trait MSGSndRcv[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 		val tcsb_class = pologClass.get_tcsb_class(po_log_class)
 		val msg_log = pologClass.get_msg_log(po_log_class)
 		val pvclock = tcsb.get_peer_vclock(tcsb_class)
-		val msg_vclock = msgOpr.make_msg_vclock(nodeVCLOCK.make(node_id, tcsb.get_node_vclock(tcsb_class)), crdt_instance)
-		pvclock.foldLeft(smd){case (smd0, (tnode_id, tvclock)) => {
-			val msg_list = get_undeliv_msg(node_id, tnode_id, tvclock, msg_vclock, msg_log, anyId)
-			smd0.updated(tnode_id, add_undeliv_msg(crdt_instance, msg_list, undeliv_msg_class(tnode_id, cluster_detail, smd0)))
-		}}
+		val msg_vclock = msgOpr.make_msg_vclock(nodeVCLOCK.make(node_id, tcsb.get_node_vclock(tcsb_class)), 
+		                                        crdt_instance)
+		tnode_list.foldLeft(smd)((smd0, tnode_id) => {
+			pvclock.get(tnode_id)
+			  .fold(smd0)(tvclock => {
+					smd0.updated(tnode_id, 
+											 add_undeliv_msg(crdt_instance, 
+																			 get_undeliv_msg(node_id, tnode_id, tvclock, msg_vclock, msg_log, anyId), 
+																			 undeliv_msg_class(tnode_id, cluster_detail, smd0)))
+																								
+			})
+		})
 	}
 											
 	def get_undeliv_msg(node_id: NODE_ID,
