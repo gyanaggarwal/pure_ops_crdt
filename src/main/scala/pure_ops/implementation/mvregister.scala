@@ -16,7 +16,7 @@ final case object MVRegister extends PureOpsNonCommCRDT {
 	def update_any(value: Any,
 	               crdt_ops: CRDTOps):
 	Any = (value, crdt_ops) match {
-		case ((_, l0), WRT(args)) => (WRT(), args :: l0.asInstanceOf[List[Any]])
+		case ((_, l0), WRT(args)) => (WRT(), List(args))
 		case (_, CLR(_))          => (CLR(), init_data)
 		case _                    => value
 	}
@@ -33,7 +33,7 @@ final case object MVRegister extends PureOpsNonCommCRDT {
 	                         crdt_data: Any): 
 	Any = (msg_log_data, crdt_data) match {
 		case ((CLR(_), _), _)   => init_data
-		case ((WRT(_), l0), l1) => l0.asInstanceOf[List[Any]] ++ l1.asInstanceOf[List[Any]]
+		case ((WRT(_), l0), _)  => l0
 		case _                  => crdt_data
 	}
 	
