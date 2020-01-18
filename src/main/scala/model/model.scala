@@ -11,6 +11,7 @@ object Model {
 	  
 	type LOGICAL_CLOCK             = Long
 	type CLUSTER_VER_NUM           = Int
+	type CONC_MSG_KEY              = Long
 	
 //HashMap
 	type VCLOCK[NODE_ID] = Map[NODE_ID, LOGICAL_CLOCK] 
@@ -65,6 +66,12 @@ object Model {
   type TYPE_MSG_VCLOCK         = MSG_VCLOCK[_, _, _, _]
 	type TYPE_MSG_OPS            = MSG_OPS[_, _, _, _]	
 
+  type MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
+    List[MESSAGE[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
+		
+	type CON_MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
+	  List[MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
+	 
 //SortedMap
   type MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
 		Map[LOGICAL_CLOCK, MSG_OPS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
@@ -78,10 +85,11 @@ object Model {
     Map[NODE_ID, MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
 		
 	final case class PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
-	                 (tcsb_class: TCSB_CLASS[NODE_ID],
-									  msg_log:    MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
-									  crdt_type:  CRDT_TYPE,
-									  crdt_data:  Any)
+	                 (tcsb_class:   TCSB_CLASS[NODE_ID],
+										con_msg_list: CON_MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+									  msg_log:      MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+									  crdt_type:    CRDT_TYPE,
+									  crdt_data:    Any)
 	
 //HashMap										
 	type PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
@@ -100,9 +108,6 @@ object Model {
 									 
 	type TYPE_CRDT_STATE_NEW  = CRDT_STATE_NEW[_, _, _, _, _]
 	type TYPE_CRDT_STATE_DATA = CRDT_STATE_DATA[_, _, _, _, _]
-	
-  type MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
-    List[MESSAGE[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
 	 
 //HashMap for list of messages for a CRDT that have not been delivered to a peer node
   type UNDELIV_MSG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =

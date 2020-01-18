@@ -53,6 +53,10 @@ trait MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 		(msg_data -- csmsg_data.keys, csmsg_data)
  	}
 
+  def remove_msg(rmsg_data: MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+	               msg_data: MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+	MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = msg_data -- rmsg_data.keys
+								 
   def undeliv_msg(logical_clock: LOGICAL_CLOCK,
 	                msg_data: MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 

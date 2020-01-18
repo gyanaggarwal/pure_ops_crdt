@@ -77,6 +77,12 @@ trait MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 	  (set_msg_data(msg_data, msg_class), set_msg_data(csmsg_data, empty))
 	}
 
+  def remove_msg(rmsg_class: MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+	               msg_class: MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
+								 (implicit msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+	MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
+	  set_msg_data(msgData.remove_msg(get_msg_data(rmsg_class), get_msg_data(msg_class)), msg_class)
+	
   def undeliv_msg(logical_clock: LOGICAL_CLOCK,
 	                msg_class: MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
 								 (implicit msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):

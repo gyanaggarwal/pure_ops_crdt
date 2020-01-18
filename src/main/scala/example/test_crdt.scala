@@ -5,11 +5,14 @@ import pure_ops._
 import pure_ops.implementation._
 import middleware._
 import cluster_config.interpreter._
+import vector_clock._
 import vector_clock.interpreter._
+import message._
 import message.interpreter._
 import msg_data.interpreter._
 import po_log.interpreter._
 import util.interpreter._
+import util._
  
 object TestCRDT {
 	implicit val updateCRDT = UpdateCRDT
@@ -27,6 +30,7 @@ object TestCRDT {
 	implicit val pologClass = POLogClassInstances.uPOLogClass
 	implicit val polog = POLogInstances.uPOLog
 	implicit val crdtState = CRDTStateInstances.uCRDTState
+	implicit val conMsgList = CONMsgListInstances.uCONMsgList
 	
 	val ianyId = AnyIdInstances.intAnyId
   val node_id0: UNODE_ID = 0
@@ -74,6 +78,56 @@ object TestCRDT {
 	val ulist1 = List(ump0, uma6)
 	val ulist2 = List(ump0, uma7)
 	
+	def add_con_msg() = {
+		val u01 = msgOpr.make_msg_ops(nodeVCLOCK.make(node_id0, 
+			                                            vectorClock.make(List((node_id0, 1),
+																								                        (node_id1, 0),
+																																			  (node_id2, 0)))), 
+																	aws0, ADD(5))
+		val u02 = msgOpr.make_msg_ops(nodeVCLOCK.make(node_id0, 
+																		              vectorClock.make(List((node_id0, 2),
+																																				(node_id1, 0),
+																																				(node_id2, 0)))), 
+																	aws0, ADD(5))
+																	
+		val u11 = msgOpr.make_msg_ops(nodeVCLOCK.make(node_id1, 
+			                                            vectorClock.make(List((node_id0, 0),
+																																				(node_id1, 1),
+																																				(node_id2, 0)))), 
+																	aws0, ADD(5))
+		val u12 = msgOpr.make_msg_ops(nodeVCLOCK.make(node_id1, 
+																									vectorClock.make(List((node_id0, 1),
+																																				(node_id1, 2),
+																																				(node_id2, 0)))), 
+																	aws0, ADD(5))
+																	
+		val u21 = msgOpr.make_msg_ops(nodeVCLOCK.make(node_id2, 
+																		              vectorClock.make(List((node_id0, 2),
+																																				(node_id1, 1),
+																																				(node_id2, 1)))), 
+																	aws0, ADD(5))
+		val u22 = msgOpr.make_msg_ops(nodeVCLOCK.make(node_id2, 
+																									vectorClock.make(List((node_id0, 2),
+																																				(node_id1, 2),
+																																				(node_id2, 2)))), 
+																	aws0, ADD(5))
+																	
+		val l0 = List(u01, u02, u11, u21, u12, u22)
+		val l1 = List(u11, u01, u12, u02, u21, u22)
+		val l2 = List(u01, u11, u02, u21, u12, u22)
+		
+		val cml = conMsgList.empty
+		val cml0 = l0.foldLeft(cml)((cmlx0, msg0) => conMsgList.add_msg(msg0, cmlx0))
+		val cml1 = l1.foldLeft(cml)((cmlx0, msg0) => conMsgList.add_msg(msg0, cmlx0))
+		val cml2 = l2.foldLeft(cml)((cmlx0, msg0) => conMsgList.add_msg(msg0, cmlx0))
+		
+		(cml0, cml1, cml2)
+	}
+
+  def split_con_msg(vclock: VCLOCK[UNODE_ID],
+	                  cml: CON_MSG_LIST[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) =
+		conMsgList.split_msg(vclock, cml)
+		
 	def update_from_user(ulist: List[USER_MSG[PureOpsCRDT, UCRDT_ID, CRDTOps]], 
 		                   csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = 
     UpdateFromUser.update_list(ulist, csdx, ianyId)										 
@@ -90,13 +144,16 @@ object TestCRDT {
 	                     csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) =
 	  UpdateFromPeer.update(umcx, csdx, ianyId, ianyId)
 		
-	def mupdate_from_peer3(tnode_list: List[UNODE_ID],
-		                     csdx0: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+	def remove_from_list(tnode_list: List[UNODE_ID],
+		                   csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = 
+		GenUtil.remove_from_list(crdtState.get_node_id(csdx), tnode_list, ianyId)
+		
+	def mupdate_from_peer3(csdx0: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 	                       csdx1: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 											   csdx2: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = {
-	  val smd0 = snd_msg_data(tnode_list, csdx0)
-		val smd1 = snd_msg_data(tnode_list, csdx1)
-		val smd2 = snd_msg_data(tnode_list, csdx2)
+	  val smd0 = snd_msg_data(remove_from_list(node_list3, csdx0), csdx0)
+		val smd1 = snd_msg_data(remove_from_list(node_list3, csdx1), csdx1)
+		val smd2 = snd_msg_data(remove_from_list(node_list3, csdx2), csdx2)
 		
 		val csdx01 = update_from_peer_smd(smd1, csdx0)	
 		val csdx02 = update_from_peer_smd(smd2, csdx01)										  	

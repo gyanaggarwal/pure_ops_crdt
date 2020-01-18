@@ -1,6 +1,7 @@
 package pure_ops
 
 import model.Model._
+import vector_clock._
 import message._
 import msg_data._
 
@@ -66,4 +67,26 @@ trait PureOpsCRDT {
 					(implicit msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 										msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]):
 	Any = eval_data(crdt_ops, combine_msg_log(crdt_data, msg_log)) 
+	
+	def add_con_msg(msg_ops: MSG_OPS[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+	                con_msg_list: CON_MSG_LIST[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
+								 (implicit vectorClock: VectorClock[UNODE_ID],
+								           nodeVCLOCK: NodeVCLOCK[UNODE_ID],
+												   msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+												   conMsgList: CONMsgList[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]):
+	CON_MSG_LIST[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps] 
+
+	def split_msg(csvclock: VCLOCK[UNODE_ID],
+	              con_msg_list: CON_MSG_LIST[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+							  msg_log: MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
+							 (implicit vectorClock: VectorClock[UNODE_ID],
+							           nodeVCLOCK: NodeVCLOCK[UNODE_ID],
+											   msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+											   msgData: MSGData[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+											   msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+											   msgLog: MSGLog[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+											   conMsgList: CONMsgList[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]):
+	(MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+	 MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+   CON_MSG_LIST[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
 }

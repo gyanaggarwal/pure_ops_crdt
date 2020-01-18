@@ -33,6 +33,10 @@ trait VectorClock[NODE_ID]{
 	VCLOCK[NODE_ID] = 
 	  node_list.foldLeft(empty)((vc0, n0) => vc0.updated(n0, zero))
 		
+	def make(vlist: List[(NODE_ID, LOGICAL_CLOCK)]):
+	VCLOCK[NODE_ID] =
+	  vlist.foldLeft(empty){case (vc0, (n0, lc0)) => vc0.updated(n0, lc0)}
+		
 	def next_clock(lc: LOGICAL_CLOCK): 
 	LOGICAL_CLOCK = lc+1 
 
