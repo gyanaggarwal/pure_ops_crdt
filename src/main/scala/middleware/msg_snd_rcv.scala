@@ -58,7 +58,7 @@ trait MSGSndRcv[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 		crdtState.get_po_log(crdt_state).fold(smd)(po_log => {
 			val node_id = crdtState.get_node_id(crdt_state)
 		  make_undeliv_msg(node_id, 
-			                 GenUtil.remove_from_list(crdtState.get_node_id(crdt_state), tnode_list, anyId),
+			                 GenUtil.remove_from_list(node_id, tnode_list, anyId),
 		                   crdtState.get_cluster_detail(crdt_state), 
 										   po_log, 
 										   smd, 
