@@ -55,13 +55,15 @@ trait MSGSndRcv[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 										        crdtState: CRDTState[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	SND_MSG_DATA[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = {
 		val smd = empty_snd_msg_data
-		crdtState.get_po_log(crdt_state).fold(smd)(po_log => 
-		  make_undeliv_msg(crdtState.get_node_id(crdt_state), 
+		crdtState.get_po_log(crdt_state).fold(smd)(po_log => {
+			val node_id = crdtState.get_node_id(crdt_state)
+		  make_undeliv_msg(node_id, 
 			                 GenUtil.remove_from_list(crdtState.get_node_id(crdt_state), tnode_list, anyId),
 		                   crdtState.get_cluster_detail(crdt_state), 
 										   po_log, 
 										   smd, 
-										   anyId))
+										   anyId)}
+		)
 	}
 	
 	def make_undeliv_msg(node_id: NODE_ID,
@@ -79,7 +81,13 @@ trait MSGSndRcv[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 																 pologClass: POLogClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	SND_MSG_DATA[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
 	  po_log.foldLeft(smd){case (smd0, (crdt_instance, po_log_class)) => 
-	    make_msg_data(node_id, tnode_list, cluster_detail, crdt_instance, po_log_class, smd0, anyId)
+	    make_msg_data(node_id, 
+				            tnode_list, 
+									  cluster_detail, 
+									  crdt_instance, 
+									  po_log_class, 
+									  smd0, 
+									  anyId)
 	}
 	
 	def make_msg_data(node_id: NODE_ID,
