@@ -151,9 +151,9 @@ object TestCRDT {
 	def mupdate_from_peer3(csdx0: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 	                       csdx1: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 											   csdx2: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = {
-	  val smd0 = snd_msg_data(remove_from_list(node_list3, csdx0), csdx0)
-		val smd1 = snd_msg_data(remove_from_list(node_list3, csdx1), csdx1)
-		val smd2 = snd_msg_data(remove_from_list(node_list3, csdx2), csdx2)
+	  val smd0 = snd_msg_data(node_list3, csdx0)
+		val smd1 = snd_msg_data(node_list3, csdx1)
+		val smd2 = snd_msg_data(node_list3, csdx2)
 		
 		val csdx01 = update_from_peer_smd(smd1, csdx0)	
 		val csdx02 = update_from_peer_smd(smd2, csdx01)										  	
