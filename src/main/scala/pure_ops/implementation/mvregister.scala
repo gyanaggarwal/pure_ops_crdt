@@ -13,6 +13,9 @@ final case object MVRegister extends PureOpsNonCommCRDT {
 		case _      => false
 	}
 	
+  def isConcurrent(crdt_ops0: CRDTOps, crdt_ops1: CRDTOps):
+	Boolean = true
+	
 	def update_any(value: Any,
 	               crdt_ops: CRDTOps):
 	Any = (value, crdt_ops) match {

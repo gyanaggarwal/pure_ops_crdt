@@ -69,9 +69,6 @@ object Model {
   type MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
     List[MESSAGE[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
 		
-	type CON_MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
-	  List[MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
-	 
 //SortedMap
   type MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
 		Map[LOGICAL_CLOCK, MSG_OPS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
@@ -84,9 +81,12 @@ object Model {
   type MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
     Map[NODE_ID, MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
 		
+	type CON_MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
+	  List[MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
+		
 	final case class PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
 	                 (tcsb_class:   TCSB_CLASS[NODE_ID],
-										con_msg_list: CON_MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+										con_msg_log:  CON_MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 									  msg_log:      MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 									  crdt_type:    CRDT_TYPE,
 									  crdt_data:    Any)

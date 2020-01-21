@@ -5,6 +5,8 @@ import vector_clock._
 import message._
 import msg_data._
 
+import scala.collection.immutable._
+
 sealed trait CRDTOps
 final case class EVL(args: Any = ())   extends CRDTOps
 final case class INC(args: Int = 1)    extends CRDTOps
@@ -18,13 +20,16 @@ final case class BCD(args: Any)        extends CRDTOps
 final case class BCX(args: Any)        extends CRDTOps
 final case class SET(args: Boolean)    extends CRDTOps
 
-final case class ARSet(aset: Set[Any] = Set.empty[Any], rset: Set[Any] = Set.empty[Any])
+final case class ARSet(aset: HashSet[Any] = HashSet.empty[Any], 
+	                     rset: HashSet[Any] = HashSet.empty[Any])
 
 trait PureOpsCRDT {
 	def init_data: Any
 
 	def valid_ops(ops: CRDTOps): Boolean
 
+  def isConcurrent(crdt_ops0: CRDTOps, crdt_ops1: CRDTOps): Boolean
+	
   def update_comm_crdt(crdt_data: Any,
 	                     crdt_ops: CRDTOps): Any
 
@@ -52,7 +57,7 @@ trait PureOpsCRDT {
 	Any = crdt_data
 
   def eval_set(crdt_ops: CRDTOps,
-	             crdt_set: Set[Any]):
+	             crdt_set: HashSet[Any]):
 	Any = crdt_ops match {
 		case EVL(args) => args match {
 			case () => crdt_set
@@ -69,24 +74,27 @@ trait PureOpsCRDT {
 	Any = eval_data(crdt_ops, combine_msg_log(crdt_data, msg_log)) 
 	
 	def add_con_msg(msg_ops: MSG_OPS[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
-	                con_msg_list: CON_MSG_LIST[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
+	                con_msg_log: CON_MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
 								 (implicit vectorClock: VectorClock[UNODE_ID],
 								           nodeVCLOCK: NodeVCLOCK[UNODE_ID],
+												   conMSGLog: CONMSGLog[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 												   msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
-												   conMsgList: CONMsgList[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]):
-	CON_MSG_LIST[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps] 
+												   msgData: MSGData[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+												   msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+												   msgLog: MSGLog[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]):
+	CON_MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]
 
-	def split_msg(csvclock: VCLOCK[UNODE_ID],
-	              con_msg_list: CON_MSG_LIST[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
+	def split_msg(csvc: VCLOCK[UNODE_ID],
+	              con_msg_log: CON_MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 							  msg_log: MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
 							 (implicit vectorClock: VectorClock[UNODE_ID],
 							           nodeVCLOCK: NodeVCLOCK[UNODE_ID],
+											   conMSGLog: CONMSGLog[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 											   msgOpr: MSGOperation[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 											   msgData: MSGData[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 											   msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
-											   msgLog: MSGLog[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
-											   conMsgList: CONMsgList[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]):
+											   msgLog: MSGLog[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]):
 	(MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 	 MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
-   CON_MSG_LIST[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
+   CON_MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps])
 }

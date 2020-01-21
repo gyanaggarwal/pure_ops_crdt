@@ -11,6 +11,13 @@ trait OWFlag extends PureOpsNonCommCRDT {
 		case SET(_) => true
 		case _      => false
 	}
+
+  def isConcurrent(crdt_ops0: CRDTOps, crdt_ops1: CRDTOps):
+	Boolean = (crdt_ops0, crdt_ops1) match {
+		case (SET(true), SET(false)) => true
+		case (SET(false), SET(true)) => true
+		case _                       => false
+	}
 	
 	def update_any(value: Any,
 	               crdt_ops: CRDTOps):

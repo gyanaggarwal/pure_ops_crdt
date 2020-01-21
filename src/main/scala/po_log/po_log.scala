@@ -22,7 +22,7 @@ trait POLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 				    (implicit crdtInstance: CRDTInstance[CRDT_TYPE, CRDT_ID],
 								      vectorClock: VectorClock[NODE_ID],
 								      tcsb: TCSB[NODE_ID, CLUSTER_ID],
-											conMsgList: CONMsgList[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+											conMSGLog: CONMSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 								      msgLog: MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 								      pologClass: POLogClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
@@ -39,7 +39,7 @@ trait POLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 				 (implicit crdtInstance: CRDTInstance[CRDT_TYPE, CRDT_ID],
 								   vectorClock: VectorClock[NODE_ID],
 								   tcsb: TCSB[NODE_ID, CLUSTER_ID],
-									 conMsgList: CONMsgList[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+									 conMSGLog: CONMSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 								   msgLog: MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 								   pologClass: POLogClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
@@ -52,7 +52,7 @@ trait POLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 												        tcsb: TCSB[NODE_ID, CLUSTER_ID],
 																clusterConfig: ClusterConfig[NODE_ID, CLUSTER_ID],
 																nodeVCLOCK: NodeVCLOCK[NODE_ID],
-																conMsgList: CONMsgList[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+																conMSGLog: CONMSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 																msgOpr: MSGOperation[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 																msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 																msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
@@ -65,6 +65,7 @@ trait POLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 			            fnode_id: NODE_ID,
 									po_log: PO_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
 								 (implicit tcsb: TCSB[NODE_ID, CLUSTER_ID],
+									         conMSGLog: CONMSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],									         
 										       msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 													 msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 													 msgLog: MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],

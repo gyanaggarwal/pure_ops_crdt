@@ -16,7 +16,7 @@ object VectorClockInstances {
 			VCLOCK[UNODE_ID] = {
 			  val vc01 = vc0.asInstanceOf[HashMap[UNODE_ID, LOGICAL_CLOCK]]
 			  val vc11 = vc1.asInstanceOf[HashMap[UNODE_ID, LOGICAL_CLOCK]]
-		    vc01.merged(vc11)({case ((k0x, v0x), (_, v1x)) => (k0x, mf(v0x, v1x))})
+		    vc01.merged(vc11){case ((k0x, v0x), (_, v1x)) => (k0x, mf(v0x, v1x))}
 			}
 	  }
 }

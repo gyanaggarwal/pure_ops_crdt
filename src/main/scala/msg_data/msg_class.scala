@@ -45,6 +45,21 @@ trait MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 	MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
 		set_pending_msg_data(msgData.add_msg(msg_ops, get_pending_msg_data(msg_class)), msg_class)
 		
+	def merge(msg_class0: MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+		        msg_class1: MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
+					 (implicit msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+	MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
+	  make(msgData.merge(get_msg_data(msg_class0), get_msg_data(msg_class1)),
+	       msgData.merge(get_pending_msg_data(msg_class0), get_pending_msg_data(msg_class1)))
+	
+	def check_causal_stable(csvc: VCLOCK[NODE_ID],
+			                    msg_class: MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
+			 	                 (implicit vectorClock: VectorClock[NODE_ID],
+			 		                         nodeVCLOCK: NodeVCLOCK[NODE_ID],
+			 						                 msgOpr: MSGOperation[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+																   msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+	COMPVC = msgData.check_causal_stable(csvc, get_msg_data(msg_class))
+					
 	def check_pending_msg(msg_ops: MSG_OPS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 		                    msg_class: MSG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
 							         (implicit vectorClock: VectorClock[NODE_ID],

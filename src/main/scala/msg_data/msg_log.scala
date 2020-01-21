@@ -45,16 +45,6 @@ trait MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 	MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
 	  add_msg_data(msg_ops, msg_log, msgClass.add_msg)
 
-	def add_msg(msg_list: MSG_LIST[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
-		          msg_log: MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
-						 (implicit vectorClock: VectorClock[NODE_ID],
-										   nodeVCLOCK: NodeVCLOCK[NODE_ID],
-											 msgOpr: MSGOperation[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
-											 msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
-											 msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
-	MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
-		msg_list.foldLeft(msg_log)((ml, msg) => add_msg(msgOpr.asMSG_OPS(msg), ml))
-
 	def add_pending_msg(msg_ops: MSG_OPS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 		                  msg_log: MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
 							       (implicit vectorClock: VectorClock[NODE_ID],
@@ -105,6 +95,25 @@ trait MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 			(ml1.updated(ni0, mc1), ml2.updated(ni0, mc2))
 	  }
 	} 
+
+	def merge(msg_log0: MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+		        msg_log1: MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
+					 (implicit msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+					           msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+	MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]
+	
+	def check_causal_stable(csvc: VCLOCK[NODE_ID],
+			                    msg_log: MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
+			 	                 (implicit vectorClock: VectorClock[NODE_ID],
+			 		                         nodeVCLOCK: NodeVCLOCK[NODE_ID],
+			 						                 msgOpr: MSGOperation[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+																   msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+																   msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+	COMPVC = msg_log.foldLeft(UNDVC: COMPVC){
+		case (CONVC, _)          => CONVC
+		case (GTVC, _)           => GTVC
+		case (_, (_, msg_class)) => msgClass.check_causal_stable(csvc, msg_class)
+	}
 	
 	def remove_msg(rmsg_log: MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 	               msg_log: MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])

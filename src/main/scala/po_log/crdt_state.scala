@@ -78,7 +78,7 @@ trait CRDTState[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 												        clusterConfig: ClusterConfig[NODE_ID, CLUSTER_ID],
 									              vectorClock: VectorClock[NODE_ID],
 									              tcsb: TCSB[NODE_ID, CLUSTER_ID],
-																conMsgList: CONMsgList[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+																conMSGLog: CONMSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 									              msgLog: MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 									              pologClass: POLogClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 															  polog: POLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
@@ -95,7 +95,7 @@ trait CRDTState[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 													     tcsb: TCSB[NODE_ID, CLUSTER_ID],
 															 clusterConfig: ClusterConfig[NODE_ID, CLUSTER_ID],
 															 nodeVCLOCK: NodeVCLOCK[NODE_ID],
-															 conMsgList: CONMsgList[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+															 conMSGLog: CONMSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 															 msgOpr: MSGOperation[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 															 msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 															 msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
@@ -115,6 +115,7 @@ trait CRDTState[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 								  anyId: AnyId[CLUSTER_ID])
 								 (implicit clusterConfig: ClusterConfig[NODE_ID, CLUSTER_ID],
 									         tcsb: TCSB[NODE_ID, CLUSTER_ID],
+													 conMSGLog: CONMSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 										       msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 													 msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 													 msgLog: MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],

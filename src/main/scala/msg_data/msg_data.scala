@@ -23,7 +23,7 @@ trait MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 								         nodeVCLOCK: NodeVCLOCK[NODE_ID],
 												 msgOpr: MSGOperation[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	CHECKMSG = if (msg_data.contains(msgOpr.logical_clock(msg_ops))) DUPMSG else OOOMSG 
-
+	
 	def take_msg(msg_ops: MSG_OPS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 		           msg_data: MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
 							(implicit vectorClock: VectorClock[NODE_ID],
@@ -43,8 +43,7 @@ trait MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
  	(MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
  	 MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]) = {
  	  val csmsg_data = msg_data.filter{case (lc, msg_ops) => {
- 	  	val mvc = msgOpr.get_vclock(msg_ops)
-			vectorClock.comp_vc(mvc, csvc) match {
+			vectorClock.comp_vc(msgOpr.get_vclock(msg_ops), csvc) match {
 				case LTVC => true
 				case EQVC => true
 				case _    => false
@@ -53,6 +52,21 @@ trait MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 		(msg_data -- csmsg_data.keys, csmsg_data)
  	}
 
+  def merge(msg_data0: MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+	          msg_data1: MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+	MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = msg_data0 ++ msg_data1
+	 
+	def check_causal_stable(csvc: VCLOCK[NODE_ID],
+                          msg_data: MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
+	                       (implicit vectorClock: VectorClock[NODE_ID],
+		                               nodeVCLOCK: NodeVCLOCK[NODE_ID],
+						                       msgOpr: MSGOperation[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+	COMPVC = msg_data.foldLeft(UNDVC: COMPVC){
+		case (CONVC, _)        => CONVC
+		case (GTVC, _)         => GTVC
+		case (_, (_, msg_ops)) => vectorClock.comp_vc(msgOpr.get_vclock(msg_ops), csvc)
+	}
+	
   def remove_msg(rmsg_data: MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 	               msg_data: MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	MSG_DATA[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = msg_data -- rmsg_data.keys

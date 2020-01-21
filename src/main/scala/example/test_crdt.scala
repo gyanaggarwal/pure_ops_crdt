@@ -30,7 +30,7 @@ object TestCRDT {
 	implicit val pologClass = POLogClassInstances.uPOLogClass
 	implicit val polog = POLogInstances.uPOLog
 	implicit val crdtState = CRDTStateInstances.uCRDTState
-	implicit val conMsgList = CONMsgListInstances.uCONMsgList
+	implicit val conMSGLog = CONMSGLogInstances.uCONMSGLog
 	
 	val ianyId = AnyIdInstances.intAnyId
   val node_id0: UNODE_ID = 0
@@ -116,17 +116,17 @@ object TestCRDT {
 		val l1 = List(u11, u01, u12, u02, u21, u22)
 		val l2 = List(u01, u11, u02, u21, u12, u22)
 		
-		val cml = conMsgList.empty
-		val cml0 = l0.foldLeft(cml)((cmlx0, msg0) => conMsgList.add_msg(msg0, cmlx0))
-		val cml1 = l1.foldLeft(cml)((cmlx0, msg0) => conMsgList.add_msg(msg0, cmlx0))
-		val cml2 = l2.foldLeft(cml)((cmlx0, msg0) => conMsgList.add_msg(msg0, cmlx0))
+		val cml = conMSGLog.empty
+		val cml0 = l0.foldLeft(cml)((cmlx0, msg0) => conMSGLog.add_msg(AWSet, msgOpr.asMSG_OPS(msg0), cmlx0))
+		val cml1 = l1.foldLeft(cml)((cmlx0, msg0) => conMSGLog.add_msg(AWSet, msgOpr.asMSG_OPS(msg0), cmlx0))
+		val cml2 = l2.foldLeft(cml)((cmlx0, msg0) => conMSGLog.add_msg(AWSet, msgOpr.asMSG_OPS(msg0), cmlx0))
 		
 		(cml0, cml1, cml2)
 	}
 
   def split_con_msg(vclock: VCLOCK[UNODE_ID],
-	                  cml: CON_MSG_LIST[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) =
-		conMsgList.split_msg(vclock, cml)
+	                  cml: CON_MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) =
+		conMSGLog.split_msg(vclock, cml)
 		
 	def update_from_user(ulist: List[USER_MSG[PureOpsCRDT, UCRDT_ID, CRDTOps]], 
 		                   csdx: CRDT_STATE[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]) = 
