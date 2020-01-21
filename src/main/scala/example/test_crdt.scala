@@ -117,9 +117,9 @@ object TestCRDT {
 		val l2 = List(u01, u11, u02, u21, u12, u22)
 		
 		val cml = conMSGLog.empty
-		val cml0 = l0.foldLeft(cml)((cmlx0, msg0) => conMSGLog.add_msg(AWSet, msgOpr.asMSG_OPS(msg0), cmlx0))
-		val cml1 = l1.foldLeft(cml)((cmlx0, msg0) => conMSGLog.add_msg(AWSet, msgOpr.asMSG_OPS(msg0), cmlx0))
-		val cml2 = l2.foldLeft(cml)((cmlx0, msg0) => conMSGLog.add_msg(AWSet, msgOpr.asMSG_OPS(msg0), cmlx0))
+		val cml0 = l0.foldLeft(cml)((cmlx0, msg0) => conMSGLog.add_msg(msgOpr.asMSG_OPS(msg0), cmlx0, AWSet.isConcurrent))
+		val cml1 = l1.foldLeft(cml)((cmlx0, msg0) => conMSGLog.add_msg(msgOpr.asMSG_OPS(msg0), cmlx0, AWSet.isConcurrent))
+		val cml2 = l2.foldLeft(cml)((cmlx0, msg0) => conMSGLog.add_msg(msgOpr.asMSG_OPS(msg0), cmlx0, AWSet.isConcurrent))
 		
 		(cml0, cml1, cml2)
 	}

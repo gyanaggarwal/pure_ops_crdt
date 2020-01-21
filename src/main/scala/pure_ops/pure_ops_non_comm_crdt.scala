@@ -12,6 +12,9 @@ trait PureOpsNonCommCRDT extends PureOpsCRDT {
 	
 	def init_any: Any
 	
+  def isConcurrent(crdt_ops0: CRDTOps, 
+		               crdt_ops1: CRDTOps): Boolean
+	
 	def update_any(value: Any,
 	               crdt_ops: CRDTOps):Any
 	
@@ -39,7 +42,7 @@ trait PureOpsNonCommCRDT extends PureOpsCRDT {
 												   msgClass: MSGClass[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],
 												   msgLog: MSGLog[UNODE_ID, UCLUSTER_ID, PureOpsCRDT, UCRDT_ID, CRDTOps]):
 	CON_MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps] = 
-	  conMSGLog.add_msg(this, msg_ops, con_msg_log)
+	  conMSGLog.add_msg(msg_ops, con_msg_log, isConcurrent)
 		
 	def split_msg(csvc: VCLOCK[UNODE_ID],
 	              con_msg_log: CON_MSG_LOG[UNODE_ID, PureOpsCRDT, UCRDT_ID, CRDTOps],

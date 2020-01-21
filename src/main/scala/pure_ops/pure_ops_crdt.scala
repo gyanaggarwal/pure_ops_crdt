@@ -28,8 +28,6 @@ trait PureOpsCRDT {
 
 	def valid_ops(ops: CRDTOps): Boolean
 
-  def isConcurrent(crdt_ops0: CRDTOps, crdt_ops1: CRDTOps): Boolean
-	
   def update_comm_crdt(crdt_data: Any,
 	                     crdt_ops: CRDTOps): Any
 

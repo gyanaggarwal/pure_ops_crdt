@@ -6,10 +6,7 @@ import message._
 import msg_data._
 
 trait PureOpsCommCRDT extends PureOpsCRDT {
-  def isConcurrent(crdt_ops0: CRDTOps, crdt_ops1: CRDTOps):
-	Boolean = false
-
-  def combine_msg_log_data(msg_log_data: Any,
+	def combine_msg_log_data(msg_log_data: Any,
 	                         crdt_data: Any): 
 	Any = crdt_data
 	
