@@ -59,6 +59,13 @@ trait POLogClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 	                  po_log_class: PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = po_log_class.copy(crdt_data = crdt_data)						 
 
+  def set3(tcsb_class: TCSB_CLASS[NODE_ID],
+		       con_msg_log: CON_MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+		       msg_log: MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+				   po_log_class: PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+	PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
+	  po_log_class.copy(tcsb_class = tcsb_class, con_msg_log = con_msg_log, msg_log = msg_log)
+	
 	def take_pending_msg(msg_ops: MSG_OPS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 		                   po_log_class: PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
 							        (implicit vectorClock: VectorClock[NODE_ID],
@@ -126,11 +133,10 @@ trait POLogClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 														   msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 														   msgLog: MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
 	PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = {
-		val tcsb_class = tcsb.upgrade_replica(cluster_detail, get_tcsb_class(po_log_class))
-		val msg_log = msgLog.upgrade_replica(cluster_detail, get_msg_log(po_log_class))
-		val con_msg_log = conMSGLog.upgrade_replica(cluster_detail, get_con_msg_log(po_log_class))
-		val po_log_class1 = set_tcsb_class(tcsb_class, set_msg_log(msg_log, set_con_msg_log(con_msg_log, po_log_class)))
-		
+		val po_log_class1 = set3(tcsb.upgrade_replica(cluster_detail, get_tcsb_class(po_log_class)), 
+		                         conMSGLog.upgrade_replica(cluster_detail, get_con_msg_log(po_log_class)), 
+														 msgLog.upgrade_replica(cluster_detail, get_msg_log(po_log_class)), 
+														 po_log_class)
 		cluster_detail match {
 			case _: TYPE_CLUSTER_DETAIL_ADD => po_log_class1
 			case _: TYPE_CLUSTER_DETAIL_RMV => update_causal_stable(po_log_class1)
@@ -145,10 +151,9 @@ trait POLogClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 									         msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 												   msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
 												   msgLog: MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
-	PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = {
-		val tcsb_class = tcsb.new_replica(rnode_id, fnode_id, get_tcsb_class(po_log_class))
-		val msg_log = msgLog.new_replica(get_msg_log(po_log_class))
-		val con_msg_log = conMsgLog.new_replica(get_con_msg_log(po_log_class))
-		set_tcsb_class(tcsb_class, set_msg_log(msg_log, set_con_msg_log(con_msg_log, po_log_class)))
-	}
+	PO_LOG_CLASS[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
+		set3(tcsb.new_replica(rnode_id, fnode_id, get_tcsb_class(po_log_class)), 
+		     conMsgLog.new_replica(get_con_msg_log(po_log_class)), 
+				 msgLog.new_replica(get_msg_log(po_log_class)), 
+				 po_log_class)
 }

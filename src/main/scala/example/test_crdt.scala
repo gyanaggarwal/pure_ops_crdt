@@ -71,6 +71,7 @@ object TestCRDT {
 
 	val ump0 = userMSG.make(pnc0, INC())
 	val uma5 = userMSG.make(aws0, ADD(5))
+	val umr5 = userMSG.make(aws0, RMV(5))
 	val uma6 = userMSG.make(aws0, ADD(6))
 	val uma7 = userMSG.make(aws0, ADD(7))
 	
