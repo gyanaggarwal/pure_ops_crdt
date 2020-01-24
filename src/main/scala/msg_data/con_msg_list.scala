@@ -95,6 +95,10 @@ trait CONMSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] {
 	CON_MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
 	  con_msg_log.map(msg_log => msgLog.upgrade_replica(cluster_detail, msg_log))
 	
-	def new_replica(con_msg_log: CON_MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
-	CON_MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = empty
+	def new_replica(con_msg_log: CON_MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS])
+                 (implicit msgData: MSGData[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+                           msgClass: MSGClass[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS],
+                           msgLog: MSGLog[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]):
+	CON_MSG_LOG[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] = 
+	  con_msg_log.map(msg_log => msgLog.new_replica(msg_log))
 }
