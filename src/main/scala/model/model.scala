@@ -4,14 +4,13 @@ object Model {
 /* following types can be changes */
 	
 	type UNODE_ID                  = Int
-	type UCRDT_ID                  = Int
+	type UCRDT_ID                  = Any
 	type UCLUSTER_ID               = Int
 
 /* following types should not be changed */
 	  
 	type LOGICAL_CLOCK             = Long
 	type CLUSTER_VER_NUM           = Int
-//	type CONC_MSG_KEY              = Long
 	
 //HashMap
 	type VCLOCK[NODE_ID] = Map[NODE_ID, LOGICAL_CLOCK] 
