@@ -11,7 +11,7 @@ object Model {
 	  
 	type LOGICAL_CLOCK             = Long
 	type CLUSTER_VER_NUM           = Int
-	type CONC_MSG_KEY              = Long
+//	type CONC_MSG_KEY              = Long
 	
 //HashMap
 	type VCLOCK[NODE_ID] = Map[NODE_ID, LOGICAL_CLOCK] 
@@ -45,6 +45,9 @@ object Model {
 										node_list:  List[NODE_ID]) 
 									 extends CLUSTER_DETAIL[NODE_ID, CLUSTER_ID]
 
+	type TYPE_CLUSTER_DETAIL_ADD = ClusterDetailADD[_, _]
+	type TYPE_CLUSTER_DETAIL_RMV = ClusterDetailRMV[_, _]
+
  	final case class USER_MSG[CRDT_TYPE, CRDT_ID, CRDT_OPS]
 	                 (crdt_instance: CRDT_INSTANCE[CRDT_TYPE, CRDT_ID],
 									  crdt_ops:      CRDT_OPS)
@@ -59,9 +62,6 @@ object Model {
 								 		crdt_instance:  CRDT_INSTANCE[CRDT_TYPE, CRDT_ID],
 									  crdt_ops:       CRDT_OPS)
 								 	 extends MESSAGE[NODE_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] 																											
-
-	type TYPE_CLUSTER_DETAIL_ADD = ClusterDetailADD[_, _]
-	type TYPE_CLUSTER_DETAIL_RMV = ClusterDetailRMV[_, _]
 
   type TYPE_MSG_VCLOCK         = MSG_VCLOCK[_, _, _, _]
 	type TYPE_MSG_OPS            = MSG_OPS[_, _, _, _]	
@@ -120,5 +120,4 @@ object Model {
 //HashMap for all the peer nodes for undelivered messages
 	type SND_MSG_DATA[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS] =
 		Map[NODE_ID, UNDELIV_MSG_CLASS[NODE_ID, CLUSTER_ID, CRDT_TYPE, CRDT_ID, CRDT_OPS]]
-	
 }
