@@ -45,7 +45,7 @@ final case object DataModelUtil {
 	def make_attribute_value_list(attribute_list: List[ATTRIBUTE_DESC],
 	                              data_map: DATA_MAP):
 	List[ATTRIBUTE_VALUE] = attribute_list.foldLeft(List.empty[ATTRIBUTE_VALUE]){
-		case (l0, ad0: VALUE_ATTRIBUTE) => ad0 :: l0
+		case (l0, ad0: VALUE_ATTRIBUTE) => l0
 		case (l0, ad0)                  => data_map.get(Attribute.get_qualified_name(ad0)).
 		                                     fold(l0)(value => 
 																					 ANY_ATTRIBUTE_VALUE(Attribute.get_qualified_desc(ad0), value) :: l0)

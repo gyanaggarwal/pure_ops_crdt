@@ -74,15 +74,18 @@ final case object Attribute {
 	}	
 	
 	def update_attribute(attribute_value: ATTRIBUTE_VALUE, map: DATA_MAP):
-	DATA_MAP = {
-		val qn = get_qualified_name(attribute_value)
-		val v0 = get_value(attribute_value)
-		val v2 = attribute_value match {
-		  case _: MAP_ATTRIBUTE_VALUE => map.get(qn).fold(v0.asInstanceOf[MAP_ATTR_DATA])(v1 => 
+	DATA_MAP = attribute_value match {
+		case _: VALUE_ATTRIBUTE => map
+		case _                  => {
+		  val qn = get_qualified_name(attribute_value)
+		  val v0 = get_value(attribute_value)
+		  val v2 = attribute_value match {
+		    case _: MAP_ATTRIBUTE_VALUE => map.get(qn).fold(v0.asInstanceOf[MAP_ATTR_DATA])(v1 => 
 																			 v1.asInstanceOf[MAP_ATTR_DATA] ++ v0.asInstanceOf[MAP_ATTR_DATA])
-		  case _                      => v0
-	  }
-		map.updated(qn, v2)
+		    case _                      => v0
+	    }
+		  map.updated(qn, v2)
+		}
   }
 	
 	def delete_attribute(attribute_value: ATTRIBUTE_VALUE, map: DATA_MAP):
