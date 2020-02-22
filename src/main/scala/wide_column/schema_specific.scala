@@ -189,5 +189,22 @@ final case object Schema {
 		val t2 = Table.update_attribute(SchemaConstants.order_detail_object_name, pkod111, alod1, t1)
 		Table.update_attribute(SchemaConstants.order_detail_object_name, pkod122, alod2, t2)
 	}
+	
+	def update_quantity(primary_key: PRIMARY_KEY, qty: Int, table: TABLE) =
+	  Table.update_attribute(SchemaConstants.order_detail_object_name, 
+		                       primary_key, 
+												   List(ANY_ATTRIBUTE_VALUE(SchemaConstants.quantity, qty)),
+											     table)
+												 
+	def update_status(primary_key: PRIMARY_KEY, status: String, table: TABLE) =
+	  Table.update_attribute(SchemaConstants.order_detail_object_name, 
+											 		 primary_key, 
+											 		 List(ANY_ATTRIBUTE_VALUE(SchemaConstants.detail_status, status)),
+											 		 table)
+													 
+	def delete_order_detail(primary_key: PRIMARY_KEY, table: TABLE) = 
+	  Table.delete(SchemaConstants.order_detail_object_name,
+		             primary_key,
+							   table)
 }
 

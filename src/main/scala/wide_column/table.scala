@@ -16,12 +16,19 @@ final case object Table {
 	
 	def create_table(table_desc: TABLE_DESC):
   TABLE = TABLE(table_desc, DataModelUtil.empty_map)
-	
-	def add_data_map(key0: String,
-	                 data_map0: DATA_MAP,
-								   data_map1: DATA_MAP):
-	DATA_MAP = data_map1 ++ List((key0, data_map0), (DataModel.node_type, DataModel.NODE))
-	
+		
+  def update_attribute(object_name: String,
+		                   primary_key: PRIMARY_KEY, 
+		                   attribute_list: List[ATTRIBUTE_VALUE], 
+						           table: TABLE):
+  TABLE = set_attribute(object_name, primary_key, attribute_list, Attribute.update_attribute, table)
+
+  def delete_attribute(object_name: String,
+		                   primary_key: PRIMARY_KEY,
+	                     attribute_list: List[ATTRIBUTE_VALUE],
+										   table: TABLE):
+	TABLE = set_attribute(object_name, primary_key, attribute_list, Attribute.delete_attribute, table)
+
 	def delete(object_name: String,
 		         primary_key: PRIMARY_KEY, 
 						 table: TABLE):
@@ -44,6 +51,22 @@ final case object Table {
 		}
   }
 
+  def get(primary_key: PRIMARY_KEY, 
+		      table: TABLE):
+  Option[DATA_MAP] = get_map_list(primary_key, table.table_data).headOption.fold(None: Option[DATA_MAP]){
+  	case MapDataStatus(EMPTY_STATUS, _, _)         => None: Option[DATA_MAP]
+		case MapDataStatus(EXISTS_STATUS, _, data_map) => data_map.size match {
+			case 0 => None: Option[DATA_MAP]
+			case _ => Some(data_map)
+		}
+  }
+	
+/* private functions*/	
+	def add_data_map(key0: String,
+	                 data_map0: DATA_MAP,
+								   data_map1: DATA_MAP):
+	DATA_MAP = data_map1 ++ List((key0, data_map0), (DataModel.node_type, DataModel.NODE))
+	
   def make_attribute(attribute_list: List[ATTRIBUTE_VALUE],
 		                 uaf: (ATTRIBUTE_VALUE, DATA_MAP) => DATA_MAP,
 		                 map: DATA_MAP):
@@ -85,18 +108,6 @@ final case object Table {
 							                                      make_attribute(attribute_list, uaf, m1.data_map), 
 																							      table)))
 	
-  def update_attribute(object_name: String,
-		                   primary_key: PRIMARY_KEY, 
-		                   attribute_list: List[ATTRIBUTE_VALUE], 
-						           table: TABLE):
-  TABLE = set_attribute(object_name, primary_key, attribute_list, Attribute.update_attribute, table)
-
-  def delete_attribute(object_name: String,
-		                   primary_key: PRIMARY_KEY,
-	                     attribute_list: List[ATTRIBUTE_VALUE],
-										   table: TABLE):
-	TABLE = set_attribute(object_name, primary_key, attribute_list, Attribute.delete_attribute, table)
-	
 	def local_compute(attribute_desc: LCOMPUTE_ATTRIBUTE_DESC,
 	                  data_map: DATA_MAP):
 	DATA_MAP = {
@@ -134,9 +145,9 @@ final case object Table {
 	                         primary_key: PRIMARY_KEY,
 												   table: TABLE):
 	TABLE = table.table_desc.object_type.get(object_name).fold(table){
-	          	case ENTITY_TX_DESC(_, _, _, gcompute_list, _) => global_compute_list(primary_key, gcompute_list, table)
-							case _                                         => table
-	          }
+	  case ENTITY_TX_DESC(_, _, _, gcompute_list, _) => global_compute_list(primary_key, gcompute_list, table)
+		case _                                         => table
+	}
 
 	def update_secondary_index(data_map: DATA_MAP,
 	                           index_desc: INDEX_DESC,
@@ -185,14 +196,7 @@ final case object Table {
 														 primary_key: PRIMARY_KEY,
 														 table: TABLE):
 	TABLE = table.table_desc.object_type.get(object_name).fold(table){
-							case ENTITY_TX_DESC(_, _, _, _, index_list) => update_secondary_index(primary_key, index_list, false, table)
-							case _                                      => table
-						}
-		
-  def get(primary_key: PRIMARY_KEY, 
-		      table: TABLE):
-  Option[DATA_MAP] = get_map_list(primary_key, table.table_data).headOption.fold(None: Option[DATA_MAP]){
-  	case MapDataStatus(EMPTY_STATUS, _, _)         => None: Option[DATA_MAP]
-		case MapDataStatus(EXISTS_STATUS, _, data_map) => Some(data_map)
-  }
+		case ENTITY_TX_DESC(_, _, _, _, index_list) => update_secondary_index(primary_key, index_list, false, table)
+		case _                                      => table
+	}
 }
