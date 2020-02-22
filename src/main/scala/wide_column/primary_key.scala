@@ -27,7 +27,7 @@ final case object PrimaryKey {
 		val (flag, list) = primary_key_desc.primary_key.foldLeft((true, List.empty[ATTRIBUTE_KEY_VALUE])){
 			case ((flag0, l0), ad0: VALUE_ATTRIBUTE) => (flag0, ad0 :: l0)
 			case ((flag0, l0), ad0)                  => data_map.get(Attribute.get_qualified_name(ad0)).
-			                                              fold((false, MISSING_ATTRIBUTE_VALUE() :: l0))(value =>
+			                                              fold((false, DataModel.missing_key_value :: l0))(value =>
 																										(flag0, KEY_ATTRIBUTE_VALUE(Attribute.get_qualified_desc(ad0), value) :: l0))
 		}
 		val primary_key = PRIMARY_KEY(list.reverse)

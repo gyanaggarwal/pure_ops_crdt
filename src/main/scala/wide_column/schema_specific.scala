@@ -85,8 +85,8 @@ final case object AggregateOrderDetailAmount extends AggregateValueFunction {
 final case object OpenOrderDeletePrimaryKey extends DeletePrimaryKey {
   def make(primary_key: PRIMARY_KEY):
 	PRIMARY_KEY = PRIMARY_KEY(primary_key.primary_key.map{
-		case _: MISSING_ATTRIBUTE_VALUE => KEY_ATTRIBUTE_VALUE(SchemaConstants.key_open_status, SchemaConstants.detail_status_open)
-		case akv                        => akv
+		case DataModel.missing_key_value => KEY_ATTRIBUTE_VALUE(SchemaConstants.key_open_status, SchemaConstants.detail_status_open)
+		case akv                         => akv
 	})	
 }
 

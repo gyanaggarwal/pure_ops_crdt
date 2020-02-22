@@ -2,7 +2,7 @@ package wide_column
 
 final case object DataModel {
 	val node_type = "node_type"
-	val empty_key_value = MISSING_ATTRIBUTE_VALUE()
+	val missing_key_value = MISSING_KEY_VALUE()
 	
 	type DATA_MAP      = Map[String, Any]
 	type MAP_ATTR_DATA = Map[Any, Any]
@@ -101,7 +101,7 @@ final case object DataModel {
 	sealed trait ATTRIBUTE_KEY_VALUE extends ATTRIBUTE_VALUE	
 	final case class VALUE_ATTRIBUTE(value: Any)	
 	                 extends ATTRIBUTE_KEY_DESC with ATTRIBUTE_KEY_VALUE											
-	final case class MISSING_ATTRIBUTE_VALUE(value:   Any = ())
+	final case class MISSING_KEY_VALUE()
 								 	 extends ATTRIBUTE_KEY_VALUE
 	final case class KEY_ATTRIBUTE_VALUE(attribute:   ATTRIBUTE_DESC,
 								 								 			 value:       Any)

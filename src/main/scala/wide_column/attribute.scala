@@ -50,27 +50,27 @@ final case object Attribute {
 	
 	def get_value(attribute_value: ATTRIBUTE_VALUE):
 	Any = attribute_value match {
-		case _: VALUE_ATTRIBUTE         => attribute_value.asInstanceOf[VALUE_ATTRIBUTE].value
-		case _: MISSING_ATTRIBUTE_VALUE => attribute_value.asInstanceOf[MISSING_ATTRIBUTE_VALUE].value
-		case _: MAP_ATTRIBUTE_VALUE     => attribute_value.asInstanceOf[MAP_ATTRIBUTE_VALUE].value
-		case _: ANY_ATTRIBUTE_VALUE     => attribute_value.asInstanceOf[ANY_ATTRIBUTE_VALUE].value
-		case _: KEY_ATTRIBUTE_VALUE     => attribute_value.asInstanceOf[KEY_ATTRIBUTE_VALUE].value
+		case _: VALUE_ATTRIBUTE     => attribute_value.asInstanceOf[VALUE_ATTRIBUTE].value
+		case _: MISSING_KEY_VALUE   => ()
+		case _: MAP_ATTRIBUTE_VALUE => attribute_value.asInstanceOf[MAP_ATTRIBUTE_VALUE].value
+		case _: ANY_ATTRIBUTE_VALUE => attribute_value.asInstanceOf[ANY_ATTRIBUTE_VALUE].value
+		case _: KEY_ATTRIBUTE_VALUE => attribute_value.asInstanceOf[KEY_ATTRIBUTE_VALUE].value
 	}
 
 	def get_qualified_name(attribute_value: ATTRIBUTE_VALUE):
 	String = attribute_value match {
-		case _: VALUE_ATTRIBUTE         => attribute_value.asInstanceOf[VALUE_ATTRIBUTE].value.toString
-		case _: MISSING_ATTRIBUTE_VALUE => attribute_value.asInstanceOf[MISSING_ATTRIBUTE_VALUE].value.toString
-		case _: MAP_ATTRIBUTE_VALUE     => get_qualified_name(attribute_value.asInstanceOf[MAP_ATTRIBUTE_VALUE].attribute)
-		case _: ANY_ATTRIBUTE_VALUE     => get_qualified_name(attribute_value.asInstanceOf[ANY_ATTRIBUTE_VALUE].attribute)
-		case _: KEY_ATTRIBUTE_VALUE     => get_qualified_name(attribute_value.asInstanceOf[KEY_ATTRIBUTE_VALUE].attribute)
+		case _: VALUE_ATTRIBUTE     => attribute_value.asInstanceOf[VALUE_ATTRIBUTE].value.toString
+		case _: MISSING_KEY_VALUE   => ().toString
+		case _: MAP_ATTRIBUTE_VALUE => get_qualified_name(attribute_value.asInstanceOf[MAP_ATTRIBUTE_VALUE].attribute)
+		case _: ANY_ATTRIBUTE_VALUE => get_qualified_name(attribute_value.asInstanceOf[ANY_ATTRIBUTE_VALUE].attribute)
+		case _: KEY_ATTRIBUTE_VALUE => get_qualified_name(attribute_value.asInstanceOf[KEY_ATTRIBUTE_VALUE].attribute)
 	}
 	
 	def get_qualified_value(attribute_value: ATTRIBUTE_KEY_VALUE):
 	String = attribute_value match {
-		case _: VALUE_ATTRIBUTE         => attribute_value.asInstanceOf[VALUE_ATTRIBUTE].value.toString		
-		case _: MISSING_ATTRIBUTE_VALUE => attribute_value.asInstanceOf[MISSING_ATTRIBUTE_VALUE].value.toString
-		case _                          => DataModelUtil.qualified_value(get_qualified_name(attribute_value), get_value(attribute_value))
+		case _: VALUE_ATTRIBUTE   => attribute_value.asInstanceOf[VALUE_ATTRIBUTE].value.toString		
+		case _: MISSING_KEY_VALUE => ().toString
+		case _                    => DataModelUtil.qualified_value(get_qualified_name(attribute_value), get_value(attribute_value))
 	}	
 	
 	def update_attribute(attribute_value: ATTRIBUTE_VALUE, map: DATA_MAP):
