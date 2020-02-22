@@ -7,6 +7,9 @@ import scala.collection.immutable._
 final case object DataModelUtil {
 	val empty_map: DATA_MAP = HashMap.empty[String, Any]
 	
+	def is_empty(data_map: DATA_MAP):
+	Boolean = (data_map - DataModel.node_type).size == 0
+	
 	def qualified_value(name:  String, 
 		                  value: Any):
 	String = name+"#"+value.toString

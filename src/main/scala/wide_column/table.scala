@@ -55,9 +55,9 @@ final case object Table {
 		      table: TABLE):
   Option[DATA_MAP] = get_map_list(primary_key, table.table_data).headOption.fold(None: Option[DATA_MAP]){
   	case MapDataStatus(EMPTY_STATUS, _, _)         => None: Option[DATA_MAP]
-		case MapDataStatus(EXISTS_STATUS, _, data_map) => data_map.size match {
-			case 0 => None: Option[DATA_MAP]
-			case _ => Some(data_map)
+		case MapDataStatus(EXISTS_STATUS, _, data_map) => DataModelUtil.is_empty(data_map) match {
+			case true  => None: Option[DATA_MAP]
+			case false => Some(data_map)
 		}
   }
 	
@@ -65,7 +65,10 @@ final case object Table {
 	def add_data_map(key0: String,
 	                 data_map0: DATA_MAP,
 								   data_map1: DATA_MAP):
-	DATA_MAP = data_map1 ++ List((key0, data_map0), (DataModel.node_type, DataModel.NODE))
+	DATA_MAP = DataModelUtil.is_empty(data_map0) match {
+		case false => data_map1 ++ List((key0, data_map0), (DataModel.node_type, DataModel.NODE))
+		case true  => data_map1 - key0
+	}
 	
   def make_attribute(attribute_list: List[ATTRIBUTE_VALUE],
 		                 uaf: (ATTRIBUTE_VALUE, DATA_MAP) => DATA_MAP,

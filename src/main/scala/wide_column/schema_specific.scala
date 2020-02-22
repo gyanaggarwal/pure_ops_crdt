@@ -168,8 +168,7 @@ final case object Schema {
 		List(ANY_ATTRIBUTE_VALUE(SchemaConstants.order_id, oid),
 		     ANY_ATTRIBUTE_VALUE(SchemaConstants.customer_id, cid),
 				 ANY_ATTRIBUTE_VALUE(SchemaConstants.order_amount, 0.0),
-				 ANY_ATTRIBUTE_VALUE(SchemaConstants.order_dt, odt),
-			   maddress)
+				 ANY_ATTRIBUTE_VALUE(SchemaConstants.order_dt, odt))
 	
 	def open_order_primary_key(vid: Int) = 
 	  PRIMARY_KEY(List(KEY_ATTRIBUTE_VALUE(SchemaConstants.vendor_id, vid), 
@@ -180,14 +179,18 @@ final case object Schema {
 		val alo0 = order_attribute_list(1, 50, "2020-02-25")
 		
 		val pkod111 = order_detail_primary_key(1, 10, 100)
-		val alod1 = order_detail_attribute_list(1, 10, 100, "Avocado Oil", "Chosen Food", 19.0, 2, "2020-02-29")
+		val alod111 = order_detail_attribute_list(1, 10, 100, "Avocado Oil", "Chosen Food", 19.0, 2, "2020-02-29")
 		
+		val pkod113 = order_detail_primary_key(1, 10, 300)
+		val alod113 = order_detail_attribute_list(1, 10, 300, "Olive Oil", "Chosen Food", 5.0, 4, "2020-02-29")
+
 		val pkod122 = order_detail_primary_key(1, 20, 200)
-		val alod2 = order_detail_attribute_list(1, 20, 200, "Almonds", "nuts.com", 11.0, 3, "2020-02-28")
+		val alod122 = order_detail_attribute_list(1, 20, 200, "Almonds", "nuts.com", 11.0, 3, "2020-02-28")
 		
 		val t1 = Table.update_attribute(SchemaConstants.order_object_name, pko1, alo0, table)
-		val t2 = Table.update_attribute(SchemaConstants.order_detail_object_name, pkod111, alod1, t1)
-		Table.update_attribute(SchemaConstants.order_detail_object_name, pkod122, alod2, t2)
+		val t2 = Table.update_attribute(SchemaConstants.order_detail_object_name, pkod111, alod111, t1)
+		val t3 = Table.update_attribute(SchemaConstants.order_detail_object_name, pkod113, alod113, t2)
+		Table.update_attribute(SchemaConstants.order_detail_object_name, pkod122, alod122, t3)
 	}
 	
 	def update_quantity(primary_key: PRIMARY_KEY, qty: Int, table: TABLE) =
