@@ -91,26 +91,27 @@ final case object Schema {
 																																AggregateOrderDetailAmount,
 																																ComputeAggregateFunction))
 																																					
-	val open_order = INDEX_DESC(SchemaConstants.open_order_object_name, 
-															SchemaConstants.open_order_pk,
-															List(SchemaConstants.order_id, 
-																	 SchemaConstants.vendor_id, 
-																	 SchemaConstants.vendor_name, 
-																	 SchemaConstants.product_id, 
-																	 SchemaConstants.product_desc, 
-																	 SchemaConstants.quantity, 
-																	 SchemaConstants.delivery_dt),
-															OpenOrderDeletePrimaryKey)
+	val open_order = INDEX_DESC(object_name        = SchemaConstants.open_order_object_name, 
+															primary_key        = SchemaConstants.open_order_pk,
+															attribute_list     = List(SchemaConstants.order_id, 
+																	                      SchemaConstants.vendor_id, 
+																	                      SchemaConstants.vendor_name, 
+																	                      SchemaConstants.product_id, 
+																	                      SchemaConstants.product_desc, 
+																	                      SchemaConstants.quantity, 
+																	                      SchemaConstants.delivery_dt),
+															delete_primary_key = OpenOrderDeletePrimaryKey)
 															
-	val order = ENTITY_TX_DESC(SchemaConstants.order_object_name, 
-		                         SchemaConstants.order_pk)
-
-	val order_detail = ENTITY_TX_DESC(SchemaConstants.order_detail_object_name, 
-		                                SchemaConstants.order_detail_pk,
-																	  List(amount, open_status),
-																	  List(order_amount),
-																	  List(open_order))
+	val order_detail = ENTITY_TX_DESC(object_name = SchemaConstants.order_detail_object_name, 
+		                                primary_key = SchemaConstants.order_detail_pk,
+																	  local_list  = List(amount, open_status),
+																	  global_list = List(order_amount),
+																	  index_list  = List(open_order))
 	
+	val order = ENTITY_TX_DESC(object_name = SchemaConstants.order_object_name, 
+														 primary_key = SchemaConstants.order_pk,
+													   detail_list = List(order_detail))
+																															 
 	val table_desc = Table.create_table_desc(SchemaConstants.schema_name,
 																 	         List(order, order_detail, open_order))
 }
@@ -180,6 +181,11 @@ final case object SchemaInterface {
 	TABLE = Table.delete(SchemaConstants.order_detail_object_name,
 											 order_detail_primary_key(oid, vid, pid),
 											 table)
+											 
+	def delete_order(oid: Int, table: TABLE):
+	TABLE = Table.delete(SchemaConstants.order_object_name,
+										 	 order_primary_key(oid),
+										 	 table)
 }
 
 final case object SchemaTest {

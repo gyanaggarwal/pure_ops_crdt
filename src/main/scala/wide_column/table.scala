@@ -34,7 +34,7 @@ final case object Table {
 		         primary_key: PRIMARY_KEY, 
 						 table: TABLE):
   TABLE = {
-		val table1 = delete_index(object_name, primary_key, table)
+		val table1 = delete_dependency(object_name, primary_key, table)
 		val map_list = TableUtil.get_map_list(primary_key, table1.table_data)
   	val (data_status2, _, key2, map2) = 
 		  map_list.foldLeft((EXISTS_STATUS: DATA_STATUS, true, DataModel.str_attr_list, DataModelUtil.empty_map)){
@@ -97,13 +97,13 @@ final case object Table {
 							                        local_compute(local_list, data_map), 
 																			table))
 	
-	private def delete_index(object_name: String,
-	                         primary_key: PRIMARY_KEY,
-												   table: TABLE):
+	private def delete_dependency(object_name: String,
+	                              primary_key: PRIMARY_KEY,
+												        table: TABLE):
 	TABLE = TableUtil.get_object_desc(object_name, table).fold(table){
-		case ENTITY_TX_DESC(_, _, _, _, index_list) => 
-		  update_index(primary_key, index_list, false, table)
-		case _: INDEX_DESC                          => table
+		case ENTITY_TX_DESC(_, _, _, _, index_list, detail_list) => 
+		  update_index(primary_key, index_list, false, delete_detail(primary_key, detail_list, table))
+		case _: INDEX_DESC                             => table
 	}
 	
 	private def global_compute(attribute_desc: GLOBAL_ATTRIBUTE_DESC,
@@ -126,8 +126,8 @@ final case object Table {
 	                           primary_key: PRIMARY_KEY,
 												     table: TABLE):
 	TABLE = TableUtil.get_object_desc(object_name, table).fold(table){
-		case ENTITY_TX_DESC(_, _, _, global_list, _) => global_compute(primary_key, global_list, table)
-		case _: INDEX_DESC                           => table
+		case ENTITY_TX_DESC(_, _, _, global_list, _, _) => global_compute(primary_key, global_list, table)
+		case _: INDEX_DESC                              => table
 	}
 	
 	private def update_index(data_map: DATA_MAP,
@@ -140,12 +140,8 @@ final case object Table {
 				                                               upk, 
 																							         DataModelUtil.attribute_value_list(index_desc.attribute_list, data_map),
 																						           table)
-			case (true, (_, Some(dpk)))  => delete(index_desc.object_name, 
-				                                     index_desc.delete_primary_key.make(dpk),
-																	           table)
-			case (false, (Some(dpk), _)) => delete(index_desc.object_name, 
-				                                     dpk,
-																	           table)
+			case (true, (_, Some(dpk)))  => delete(index_desc.object_name, index_desc.delete_primary_key.make(dpk), table)
+			case (false, (Some(dpk), _)) => delete(index_desc.object_name, dpk, table)
 			case _                       => table
 	  }
 	}
@@ -162,12 +158,11 @@ final case object Table {
 													 table: TABLE):
 	TABLE = get(primary_key, table).fold(table)(data_map => update_index(data_map, index_list, update_flag, table))
 
-	
 	private def update_dependency(object_name: String,
 	                              primary_key: PRIMARY_KEY,
 												        table: TABLE):
 	TABLE = TableUtil.get_object_desc(object_name, table).fold(table){
-		case ENTITY_TX_DESC(_, _, local_list, global_list, index_list) => 
+		case ENTITY_TX_DESC(_, _, local_list, global_list, index_list, _) => 
 		  global_compute(primary_key, 
 			               global_list,
 										 update_index(primary_key,
@@ -176,6 +171,33 @@ final case object Table {
 										              local_compute(primary_key, 
 																	              local_list, 
 																	              table)))
-		case _: INDEX_DESC                                             => table
+		case _: INDEX_DESC                                                => table
 	}
+	
+	private def delete_detail(data_map: DATA_MAP,
+	                          entity_tx_desc: ENTITY_TX_DESC,
+									          table: TABLE):
+	TABLE = {
+	  PrimaryKey.make_primary_key(entity_tx_desc.primary_key, data_map) match {
+			case (Some(dpk), _) => delete(entity_tx_desc.object_name, dpk, table)
+			case _              => table
+	  }
+	}	
+	
+	private def delete_detail(data_map_list: List[DATA_MAP],
+	                          entity_tx_desc: ENTITY_TX_DESC,
+													  table: TABLE):
+	TABLE = data_map_list.foldLeft(table)((t0, dmap0) => delete_detail(dmap0, entity_tx_desc, t0))
+	
+	private def delete_detail(primary_key: PRIMARY_KEY,
+	                          entity_tx_desc: ENTITY_TX_DESC,
+													  table: TABLE):
+  TABLE = delete_detail(get_list(PrimaryKey.make_detail_key(entity_tx_desc.primary_key, primary_key), table), 
+                        entity_tx_desc,
+											  table)
+												
+	private def delete_detail(primary_key: PRIMARY_KEY,
+	                          entity_tx_desc_list: List[ENTITY_TX_DESC],
+													  table: TABLE):
+	TABLE = entity_tx_desc_list.foldLeft(table)((t0, e0) => delete_detail(primary_key, e0, t0))
 }

@@ -113,9 +113,10 @@ final case object DataModel {
 	sealed trait OBJECT_TYPE_DESC
 	final case class ENTITY_TX_DESC(object_name:              String,
 								 		              primary_key:              PRIMARY_KEY_DESC,
-																  local_list:               List[LOCAL_ATTRIBUTE_DESC] = List.empty[LOCAL_ATTRIBUTE_DESC],
+																  local_list:               List[LOCAL_ATTRIBUTE_DESC]  = List.empty[LOCAL_ATTRIBUTE_DESC],
 																  global_list:              List[GLOBAL_ATTRIBUTE_DESC] = List.empty[GLOBAL_ATTRIBUTE_DESC],
-																  index_list:               List[INDEX_DESC] = List.empty[INDEX_DESC])
+																  index_list:               List[INDEX_DESC]            = List.empty[INDEX_DESC],
+																  detail_list:              List[ENTITY_TX_DESC]        = List.empty[ENTITY_TX_DESC])
 								 	 extends OBJECT_TYPE_DESC
 	final case class INDEX_DESC(object_name:                  String,
 								 	            primary_key:                  PRIMARY_KEY_DESC,

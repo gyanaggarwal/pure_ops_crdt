@@ -21,6 +21,19 @@ final case object PrimaryKey {
 		}
 	}
 	
+	def make_detail_key(primary_key_desc: PRIMARY_KEY_DESC,
+	                    primary_key: PRIMARY_KEY):
+	PRIMARY_KEY = {
+	  val list = primary_key_desc.primary_key.foldLeft(List.empty[KEY_VALUE]){
+	  	case (l0, ad0: QUALIFIED_KEY_DESC) => DataModelUtil.find(ad0, primary_key.primary_key) match {
+	  		case Some(kv) => kv :: l0
+				case None     => l0
+	  	}
+			case (l0, VALUE_KEY_DESC(value))   => VALUE_KEY_VALUE(value) :: l0
+	  }
+	  PRIMARY_KEY(list.reverse)	
+	}
+	
 	def make_primary_key(primary_key_desc: PRIMARY_KEY_DESC,
 	                     data_map: DATA_MAP):
 	(Option[PRIMARY_KEY], Option[PRIMARY_KEY]) = {
