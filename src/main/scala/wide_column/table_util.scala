@@ -12,7 +12,12 @@ final case object TableUtil {
 								   data_map1: DATA_MAP):
 	DATA_MAP = DataModelUtil.is_empty(data_map0) match {
 		case false => data_map1 ++ List((key0, data_map0), (DataModel.node_type, DataModel.NODE))
-		case true  => data_map1 - key0
+		case true  => {val dmap1 = data_map1 - key0
+			DataModelUtil.is_empty(dmap1) match {
+				case false => dmap1
+				case true  => DataModelUtil.empty_map
+			}
+		}
 	}
 	
 	def get_map_list(primary_key: PRIMARY_KEY,
