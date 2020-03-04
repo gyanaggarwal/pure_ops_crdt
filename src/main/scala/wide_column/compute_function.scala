@@ -83,7 +83,7 @@ final case object IdentityUnaryFunction extends LocalValueFunction {
 }
 
 final case object CheckDataMap extends CheckFunction {
-	def check(qname:    String,
-	          data_map: DATA_MAP):
-	Option[Any] = data_map.get(qname)
+	def check(qualified_name: String,
+	          data_map:       DATA_MAP):
+	Option[Any] = data_map.get(qualified_name)
 }
